@@ -9,3 +9,65 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model Artist {
+  name       String
+  age        Int
+  email      String    @unique
+  password   String
+  biografy   String
+  styleOfArt String[]
+  createdAt  DateTime  @default(now())
+  Galleries  Gallery[]
+  id         Int       @id @default(autoincrement())
+  Art        Art[]
+}
+
+model Public {
+  name        String
+  age         Int
+  email       String   @unique
+  password    String
+  preferences String[]
+  id          Int      @id @default(autoincrement())
+  about       String
+  createdAt   DateTime @default(now())
+}
+
+model Gallery {
+  name        String     @unique
+  description String
+  id          Int        @id @default(autoincrement())
+  aboutArtist String
+  typeOfArt   String     @db.Char(1)
+  artist      Artist     @relation(fields: [artistId], references: [id])
+  artistId    Int
+  Art         Art[]
+  Exposure    Exposure[]
+  createdAt   DateTime   @default(now())
+}
+
+model Art {
+  name        String
+  description String
+  value       Float
+  typeOfArt   String    @db.Char(1)
+  artist      Artist    @relation(fields: [artistId], references: [id])
+  artistId    Int
+  id          Int       @id @default(autoincrement())
+  galleryId   Int
+  gallery     Gallery   @relation(fields: [galleryId], references: [id])
+  exposure    Exposure? @relation(fields: [exposureId], references: [id])
+  exposureId  Int?
+}
+
+model Exposure {
+  name             String
+  description      String
+  gallery          Gallery  @relation(fields: [galleryId], references: [id])
+  galleryId        Int
+  id               Int      @id @default(autoincrement())
+  arts             Art[]
+  artId            Int
+  exhibitionStyles String[]
+}
